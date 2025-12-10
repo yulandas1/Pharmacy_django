@@ -3,12 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharmacy</title>
+    <title>Pharmacy - Database Relationships</title>
+    <style>
+        /* ... ваш существующий CSS ... */
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
 </head>
-<style>
-    
-</style>
 <body>
-    
+    <div class="container">
+        <h1>Pharmacy Management System</h1>
+        
+        {% if not employee %}
+        <div class="warning">
+            <h3>База данных пуста</h3>
+            <p>В базе данных пока нет записей. Для демонстрации связей создайте тестовые данные:</p>
+            <a href="/pharmacy/create-test-data/">Создать тестовые данные</a>
+        </div>
+        {% endif %}
+        
+        <!-- остальной код -->
+        
+        <div class="section" id="data">
+            <h2>Примеры данных из контекста</h2>
+            
+            {% if employee %}
+            <h3>Сотрудник: {{ employee.first_name }} {{ employee.last_name }}</h3>
+            <p>Email: {{ employee.email }}, Телефон: {{ employee.phone }}</p>
+            
+            <h4>Зарплаты сотрудника:</h4>
+            <ul>
+                {% for salary in salaries %}
+                <li>{{ salary.amount }} (с {{ salary.effective_date }})</li>
+                {% empty %}
+                <li>Нет данных о зарплатах</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Нет данных о сотрудниках</p>
+            {% endif %}
+            
+            {% if customer %}
+            <h3>Клиент: {{ customer.first_name }} {{ customer.last_name }}</h3>
+            <p>Email: {{ customer.email }}, Возраст: {{ customer.age }}</p>
+            {% else %}
+            <p>Нет данных о клиентах</p>
+            {% endif %}
+            
+            {% if order %}
+            <h3>Заказ #{{ order.id }}</h3>
+            <p>Статус: {{ order.get_order_status_display }}, Дата: {{ order.order_date }}</p>
+            <p>Общая сумма: {{ order_total }}</p>
+            
+            <h4>Лекарства в заказе:</h4>
+            <ul>
+                {% for item in ordered_medicines %}
+                <li>{{ item.medicine.name }} x{{ item.quantity }} = {{ item.total_price }}</li>
+                {% empty %}
+                <li>Нет лекарств в заказе</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Нет данных о заказах</p>
+            {% endif %}
+        </div>
+        
+        <div class="section">
+            <h2>Навигация по связям</h2>
+            <p>Используйте следующие URL для тестирования связей:</p>
+            <ul>
+                <li><a href="/pharmacy/employee/1/">Детали сотрудника и его зарплаты</a></li>
+                <li><a href="/pharmacy/customer/1/orders/">Заказы клиента</a></li>
+                <li><a href="/pharmacy/order/1/items/">Лекарства в заказе</a></li>
+                <li><a href="/pharmacy/create-test-data/">Создать тестовые данные</a></li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
