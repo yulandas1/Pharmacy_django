@@ -1,11 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharmacy - Database Relationships</title>
+    <title>Аптека - Управление системой</title>
     <style>
-        /* ... ваш существующий CSS ... */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3, h4 {
+            color: #333;
+        }
+        .order-info {
+            background-color: #e8f4fc;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+        }
+        .employee-info {
+            background-color: #fff8e1;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #ffb300;
+        }
+        .customer-info {
+            background-color: #f3e5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #9c27b0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .total {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #3498db;
+            padding: 8px 15px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .nav-links a:hover {
+            background-color: #3498db;
+            color: white;
+        }
         .warning {
             background-color: #fff3cd;
             border: 1px solid #ffeaa7;
@@ -14,75 +89,212 @@
             margin: 20px 0;
             border-radius: 5px;
         }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            margin: -20px -20px 15px -20px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #eee;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-success {
+            background-color: #27ae60;
+        }
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+        }
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        .status-pending { color: #f39c12; }
+        .status-processing { color: #3498db; }
+        .status-completed { color: #27ae60; }
+        .status-cancelled { color: #e74c3c; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Pharmacy Management System</h1>
+        <div class="nav-links">
+            <a href="/">Главная</a>
+            <a href="/pharmacy/">Все связи</a>
+            <a href="/pharmacy/create-test-data/">Создать тестовые данные</a>
+        </div>
+        
+        <h1>Система управления аптекой</h1>
         
         {% if not employee %}
         <div class="warning">
             <h3>База данных пуста</h3>
             <p>В базе данных пока нет записей. Для демонстрации связей создайте тестовые данные:</p>
-            <a href="/pharmacy/create-test-data/">Создать тестовые данные</a>
+            <a href="/pharmacy/create-test-data/" class="btn btn-warning">Создать тестовые данные</a>
+        </div>
+        {% else %}
+        <div class="success">
+            <h3>Данные загружены успешно</h3>
+            <p>В базе данных есть тестовые данные. Вы можете просмотреть различные связи между моделями.</p>
         </div>
         {% endif %}
         
-        <!-- остальной код -->
-        
-        <div class="section" id="data">
+        <div class="section">
             <h2>Примеры данных из контекста</h2>
             
-            {% if employee %}
-            <h3>Сотрудник: {{ employee.first_name }} {{ employee.last_name }}</h3>
-            <p>Email: {{ employee.email }}, Телефон: {{ employee.phone }}</p>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Информация о сотруднике</h3>
+                </div>
+                {% if employee %}
+                <div class="employee-info">
+                    <h3>Сотрудник: {{ employee.first_name }} {{ employee.last_name }}</h3>
+                    <p><strong>Email:</strong> {{ employee.email }}</p>
+                    <p><strong>Телефон:</strong> {{ employee.phone }}</p>
+                    <p><strong>Возраст:</strong> {{ employee.age }}</p>
+                    
+                    <h4>Зарплаты сотрудника:</h4>
+                    {% if salaries %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Сумма</th>
+                                <th>Дата вступления в силу</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for salary in salaries %}
+                            <tr>
+                                <td>{{ salary.amount }} ₽</td>
+                                <td>{{ salary.effective_date|date:"d.m.Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="warning">Нет данных о зарплатах</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="warning">Нет данных о сотрудниках</p>
+                {% endif %}
+            </div>
             
-            <h4>Зарплаты сотрудника:</h4>
-            <ul>
-                {% for salary in salaries %}
-                <li>{{ salary.amount }} (с {{ salary.effective_date }})</li>
-                {% empty %}
-                <li>Нет данных о зарплатах</li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>Нет данных о сотрудниках</p>
-            {% endif %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>Информация о клиенте</h3>
+                </div>
+                {% if customer %}
+                <div class="customer-info">
+                    <h3>Клиент: {{ customer.first_name }} {{ customer.last_name }}</h3>
+                    <p><strong>Email:</strong> {{ customer.email }}</p>
+                    <p><strong>Телефон:</strong> {{ customer.phone }}</p>
+                    <p><strong>Возраст:</strong> {{ customer.age }}</p>
+                </div>
+                {% else %}
+                <p class="warning">Нет данных о клиентах</p>
+                {% endif %}
+            </div>
             
-            {% if customer %}
-            <h3>Клиент: {{ customer.first_name }} {{ customer.last_name }}</h3>
-            <p>Email: {{ customer.email }}, Возраст: {{ customer.age }}</p>
-            {% else %}
-            <p>Нет данных о клиентах</p>
-            {% endif %}
-            
-            {% if order %}
-            <h3>Заказ #{{ order.id }}</h3>
-            <p>Статус: {{ order.get_order_status_display }}, Дата: {{ order.order_date }}</p>
-            <p>Общая сумма: {{ order_total }}</p>
-            
-            <h4>Лекарства в заказе:</h4>
-            <ul>
-                {% for item in ordered_medicines %}
-                <li>{{ item.medicine.name }} x{{ item.quantity }} = {{ item.total_price }}</li>
-                {% empty %}
-                <li>Нет лекарств в заказе</li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>Нет данных о заказах</p>
-            {% endif %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>Информация о заказе</h3>
+                </div>
+                {% if order %}
+                <div class="order-info">
+                    <h3>Заказ #{{ order.id }}</h3>
+                    <p><strong>Статус:</strong> 
+                        <span class="status-{{ order.order_status }}">
+                            {{ order.get_order_status_display }}
+                        </span>
+                    </p>
+                    <p><strong>Дата заказа:</strong> {{ order.order_date|date:"d.m.Y H:i" }}</p>
+                    
+                    {% if order_total %}
+                    <div class="total">
+                        Общая сумма: {{ order_total }} ₽
+                    </div>
+                    {% endif %}
+                    
+                    <h4>Лекарства в заказе:</h4>
+                    {% if ordered_medicines %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Лекарство</th>
+                                <th>Количество</th>
+                                <th>Общая цена</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in ordered_medicines %}
+                            <tr>
+                                <td>{{ item.medicine.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.total_price }} ₽</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="warning">Нет лекарств в заказе</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="warning">Нет данных о заказах</p>
+                {% endif %}
+            </div>
         </div>
         
         <div class="section">
             <h2>Навигация по связям</h2>
-            <p>Используйте следующие URL для тестирования связей:</p>
-            <ul>
-                <li><a href="/pharmacy/employee/1/">Детали сотрудника и его зарплаты</a></li>
-                <li><a href="/pharmacy/customer/1/orders/">Заказы клиента</a></li>
-                <li><a href="/pharmacy/order/1/items/">Лекарства в заказе</a></li>
-                <li><a href="/pharmacy/create-test-data/">Создать тестовые данные</a></li>
-            </ul>
+            <p>Используйте следующие ссылки для тестирования связей между моделями:</p>
+            
+            <div class="nav-links">
+                <a href="/pharmacy/employee/1/" class="btn">
+                    <strong>Детали сотрудника</strong><br>
+                    <small>OneToOne связь</small>
+                </a>
+                <a href="/pharmacy/customer/1/orders/" class="btn">
+                    <strong>Заказы клиента</strong><br>
+                    <small>OneToMany связь</small>
+                </a>
+                <a href="/pharmacy/order/1/items/" class="btn">
+                    <strong>Лекарства в заказе</strong><br>
+                    <small>ManyToMany связь</small>
+                </a>
+                <a href="/pharmacy/create-test-data/" class="btn btn-success">
+                    <strong>Создать тестовые данные</strong><br>
+                    <small>Инициализация БД</small>
+                </a>
+            </div>
         </div>
     </div>
 </body>

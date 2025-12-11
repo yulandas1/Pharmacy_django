@@ -1,40 +1,205 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Details - Pharmacy</title>
+    <title>Детали сотрудника - Аптека</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .info { background-color: #f0f8ff; padding: 20px; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .employee-info {
+            background-color: #fff8e1;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #ffb300;
+            border-radius: 5px;
+        }
+        .salary-info {
+            background-color: #e8f4fc;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #3498db;
+            padding: 8px 15px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .nav-links a:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .current-salary {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #d4edda;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .salary-history {
+            margin-top: 30px;
+        }
+        .info-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 3px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="nav-links">
+            <a href="/">Главная</a>
+            <a href="/pharmacy/">Все связи</a>
+            <a href="/pharmacy/create-test-data/">Создать тестовые данные</a>
+        </div>
+        
         <h1>Детали сотрудника</h1>
-        <div class="info">
+        
+        <div class="employee-info">
             <h2>{{ employee.first_name }} {{ employee.last_name }}</h2>
             <p><strong>Email:</strong> {{ employee.email }}</p>
             <p><strong>Телефон:</strong> {{ employee.phone }}</p>
             <p><strong>Возраст:</strong> {{ employee.age }}</p>
+            <p><strong>Должность:</strong> {{ employee.position|default:"Не указана" }}</p>
         </div>
         
-        <h3>История зарплат</h3>
-        {% if salaries %}
-            <table>
-                <tr><th>Сумма</th><th>Дата вступления в силу</th></tr>
-                {% for salary in salaries %}
-                <tr><td>{{ salary.amount }}</td><td>{{ salary.effective_date }}</td></tr>
-                {% endfor %}
-            </table>
-        {% else %}
-            <p>Нет данных о зарплатах</p>
-        {% endif %}
-        <a href="/pharmacy/">Назад</a>
+        <div class="section">
+            <h2>История зарплат <span class="info-badge">Сотрудников</span></h2>
+            
+            {% if salaries %}
+                <div class="current-salary">
+                    Текущая зарплата: {{ salaries.0.amount }} ₽ 
+                    <small>(действует с {{ salaries.0.effective_date|date:"d.m.Y" }})</small>
+                </div>
+                
+                <div class="salary-history">
+                    <h3>История изменений зарплаты</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>Сумма (₽)</th>
+                                <th>Дата вступления в силу</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for salary in salaries %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><strong>{{ salary.amount }} ₽</strong></td>
+                                <td>{{ salary.effective_date|date:"d.m.Y" }}</td>
+                                <td>
+                                    {% if forloop.first %}
+                                        <span style="color: #27ae60; font-weight: bold;">Текущая</span>
+                                    {% else %}
+                                        <span>Предыдущая</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    <div class="salary-info">
+                        <h4>Статистика по зарплатам:</h4>
+                        <p><strong>Всего записей:</strong> {{ salaries|length }}</p>
+                        <p><strong>Первая зарплата:</strong> {{ salaries.last.amount }} ₽ ({{ salaries.last.effective_date|date:"d.m.Y" }})</p>
+                        <p><strong>Текущая зарплата:</strong> {{ salaries.first.amount }} ₽ ({{ salaries.first.effective_date|date:"d.m.Y" }})</p>
+                        {% if salaries|length > 1 %}
+                            {% with first_salary=salaries.last.amount last_salary=salaries.first.amount %}
+                                <p><strong>Рост зарплаты:</strong> {{ last_salary|add:"-"|add:first_salary }} ₽</p>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="warning">
+                    <h3>Данные о зарплатах не найдены</h3>
+                    <p>Для этого сотрудника нет информации о зарплатах в базе данных.</p>
+                    <p>Попробуйте:</p>
+                    <ul>
+                        <li><a href="/pharmacy/create-test-data/">Создать тестовые данные</a></li>
+                        <li>Перейти на <a href="/pharmacy/">главную страницу аптеки</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <div class="nav-links" style="margin-top: 20px;">
+                <a href="/pharmacy/" class="btn">← Назад к всем связям</a>
+            </div>
+        </div>
     </div>
 </body>
 </html>

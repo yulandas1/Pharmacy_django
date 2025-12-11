@@ -6,7 +6,7 @@ from .models import (
 )
 
 def index(request):
-    return HttpResponse('Добро пожаловать на главную страницу')
+    return render(request, 'pharmacy.html')
 
 def pharmacy(request):
     # Используем first() вместо get() и проверяем существование объектов
